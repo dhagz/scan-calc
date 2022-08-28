@@ -112,12 +112,6 @@ dependencies {
     implementation "androidx.room:room-runtime:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
 
-    // Paging Library
-    // For scan list pagination
-//    def paging_version = "3.1.1"
-//    implementation "androidx.paging:paging-runtime:$paging_version"
-//    implementation "androidx.paging:paging-compose:1.0.0-alpha14"
-
     // ML Kit
     // For text recognition
     implementation 'com.google.android.gms:play-services-mlkit-text-recognition:18.0.1'

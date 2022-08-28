@@ -2,6 +2,7 @@
 
     <!-- Image Picker : START -->
     <string name="image_picker_pick_image">Pick Image</string>
+    <string name="image_picker_permission_denied_msg">Using the phone camera is not permitted. Please allow permission.</string>
     <!-- Image Picker : END -->
 
 </resources>
