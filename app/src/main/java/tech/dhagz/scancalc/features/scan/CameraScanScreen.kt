@@ -1,10 +1,8 @@
 package tech.dhagz.scancalc.features.scan
 
-import android.Manifest
 import android.content.Context
-import androidx.camera.core.CameraSelector
-import androidx.camera.core.ImageCapture
-import androidx.camera.core.Preview
+import android.widget.Toast
+import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.border
@@ -12,13 +10,13 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.Button
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -26,6 +24,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.viewmodel.compose.viewModel
+import tech.dhagz.scancalc.R
+import tech.dhagz.scancalc.base.ui.LoadingDialog
+import tech.dhagz.scancalc.base.ui.ResultDialog
+import tech.dhagz.scancalc.features.scan.models.ScanOperationResult
 import java.util.concurrent.Executor
 
 /**
@@ -39,39 +43,71 @@ import java.util.concurrent.Executor
  */
 @Suppress("OPT_IN_IS_NOT_ENABLED")
 @Composable
-fun CameraScanScreen() {
-//    val cameraPermissionState = rememberPermissionState(Manifest.permission.CAMERA)
-//
-//    when (cameraPermissionState.status) {
-//        // If the camera permission is granted, then show screen with the feature enabled
-//        PermissionStatus.Granted -> {
-//            Text("Camera permission Granted")
-//        }
-//        is PermissionStatus.Denied -> {
-//            Column {
-//                val textToShow =
-//                    if ((cameraPermissionState.status as PermissionStatus.Denied)
-//                            .shouldShowRationale
-//                    ) {
-//                        // If the user has denied the permission but the rationale can be shown,
-//                        // then gently explain why the app requires this permission
-//                        "The camera is important for this app. Please grant the permission."
-//                    } else {
-//                        // If it's the first time the user lands on this feature, or the user
-//                        // doesn't want to be asked again for this permission, explain that the
-//                        // permission is required
-//                        "Camera permission required for this feature to be available. " +
-//                            "Please grant the permission"
-//                    }
-//                Text(textToShow)
-//                Button(onClick = { cameraPermissionState.launchPermissionRequest() }) {
-//                    Text("Request permission")
-//                }
-//            }
-//        }
-//    }
+fun CameraScanScreen(
+    scanViewModel: ScanViewModel = viewModel()
+) {
+    val context = LocalContext.current
+    val imageCapture = remember { mutableStateOf<ImageCapture?>(null) }
+    val executor = remember(context) { ContextCompat.getMainExecutor(context) }
+    val imageProxy = remember { mutableStateOf<ImageProxy?>(null) }
+
+    val isCaptureLoading = remember { mutableStateOf(false) }
+    val scanOperationResult = remember { mutableStateOf<ScanOperationResult?>(null) }
+
+    LoadingDialog(isCaptureLoading)
+    ResultDialog(scanOperationResult)
+
+    LaunchedEffect(imageProxy.value) {
+        imageProxy.value?.let { image ->
+            isCaptureLoading.value = false
+            scanOperationResult.value = scanViewModel.findExpression(image)
+        }
+    }
+
+    Column(
+        modifier = Modifier
+            .padding(all = 16.dp)
+            .fillMaxSize()
+    ) {
+        MLCameraView(
+            modifier = Modifier.weight(1f),
+            imageCapture = imageCapture,
+            executor = executor,
+            context = context
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(
+            modifier = Modifier
+                .fillMaxWidth(),
+            onClick = {
+                isCaptureLoading.value = true
+                imageCapture.value?.takePicture(executor,
+                    object : ImageCapture.OnImageCapturedCallback() {
+                        override fun onCaptureSuccess(image: ImageProxy) {
+                            imageProxy.value = image
+                        }
+
+                        override fun onError(exception: ImageCaptureException) {
+                            isCaptureLoading.value = false
+                            Toast.makeText(
+                                context,
+                                context.getString(R.string.camera_error_failed_capture),
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    })
+            }
+        ) {
+            Text(text = stringResource(id = R.string.camera_capture))
+        }
+    }
 }
 
+/**
+ * Source: https://betterprogramming.pub/text-recognition-with-jetpack-compose-and-camerax-9093735edf4f
+ */
 @Composable
 fun MLCameraView(
     modifier: Modifier,
@@ -104,7 +140,7 @@ fun MLCameraView(
 
                     cameraProvider.bindToLifecycle(
                         lifecycleOwner,
-                        cameraSelector as CameraSelector,
+                        cameraSelector,
                         imageCapture.value,
                         prev
                     )

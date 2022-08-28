@@ -2,7 +2,6 @@ package tech.dhagz.scancalc.features.list
 
 import android.net.Uri
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -13,8 +12,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -23,6 +25,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import tech.dhagz.scancalc.R
+import tech.dhagz.scancalc.base.ui.LoadingDialog
+import tech.dhagz.scancalc.base.ui.ResultDialog
 import tech.dhagz.scancalc.features.scan.ScanViewModel
 import tech.dhagz.scancalc.features.scan.models.ScanOperationResult
 
@@ -49,14 +53,21 @@ fun ScanListScreen(
     ) { uri: Uri? ->
         imageUri.value = uri
     }
+    val context = LocalContext.current
+    val isCaptureLoading = remember { mutableStateOf(false) }
+    val scanOperationResult = remember { mutableStateOf<ScanOperationResult?>(null) }
 
     val pagingItemsList = scannedListViewModel.getScanData().observeAsState()
 
-    // Do the image URI processing here
-    ProcessImageUri(
-        scanViewModel = scanViewModel,
-        imageUri = imageUri
-    )
+    LoadingDialog(isCaptureLoading)
+    ResultDialog(scanOperationResult)
+
+    LaunchedEffect(imageUri.value) {
+        imageUri.value?.let { uri ->
+            isCaptureLoading.value = false
+            scanOperationResult.value = scanViewModel.findExpression(context, uri)
+        }
+    }
 
     // List UI
     Scaffold(
@@ -88,7 +99,7 @@ fun ScanListScreen(
             LazyColumn(
                 contentPadding = PaddingValues(
                     top = 8.dp,
-                    bottom = 8.dp
+                    bottom = 72.dp
                 )
             ) {
                 val count = pagingItemsList.value?.size ?: 0
@@ -111,53 +122,6 @@ fun ScanListScreen(
 //                        }
 //                    }
                 }
-            }
-        }
-    }
-}
-
-@Composable
-fun ProcessImageUri(
-    scanViewModel: ScanViewModel,
-    imageUri: MutableState<Uri?>
-) {
-    val context = LocalContext.current
-
-    LaunchedEffect(imageUri.value) {
-        imageUri.value?.let { uri ->
-            try {
-                when (val res = scanViewModel.findEquation(context, uri)) {
-                    is ScanOperationResult.Success -> {
-                        Toast.makeText(
-                            context,
-                            "Result: ${res.result}",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                    is ScanOperationResult.Failed -> {
-                        Toast.makeText(
-                            context,
-                            context.getString(R.string.error_something_went_wrong),
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        Log.e(
-                            "ImagePickerScreen",
-                            "Failed Operation",
-                            res.throwable
-                        )
-                    }
-                }
-            } catch (ex: Exception) {
-                Toast.makeText(
-                    context,
-                    context.getString(R.string.error_something_went_wrong),
-                    Toast.LENGTH_SHORT
-                ).show()
-                Log.e(
-                    "ImagePickerScreen",
-                    "Failed Operation",
-                    ex
-                )
             }
         }
     }

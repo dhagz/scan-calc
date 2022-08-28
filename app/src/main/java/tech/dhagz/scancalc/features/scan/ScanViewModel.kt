@@ -5,9 +5,7 @@ import android.content.Context
 import android.net.Uri
 import androidx.camera.core.ImageProxy
 import androidx.lifecycle.ViewModel
-import com.google.android.gms.tasks.Task
 import com.google.mlkit.vision.common.InputImage
-import com.google.mlkit.vision.text.Text
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.TextRecognizer
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
@@ -36,39 +34,36 @@ class ScanViewModel @Inject constructor(
         TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
 
     /**
-     * Process the [visionText] whether or not it contains an expression.
-     * If the [visionText] contains an expression, the data will immediately
+     * Process the [inputImage] whether or not it contains an expression.
+     * If the [inputImage] contains an expression, the data will immediately
      * be saved to the local database
      *
-     * @param [visionText] - The text found when scanning
+     * @param [inputImage] - The input image from file or camera capture.
      * @return [ScanOperationResult] - Containing all the data and the result of the expression.
-     * @throws [ScanVisionTextNotFoundException] - When scanned text is empty
-     * @throws [ScanNumberNotFoundException] - Number is not found in the scanned text
-     * @throws [ScanOperatorNotFoundException] - When the scanned text does not contain any of the
-     *   supported operators.
-     * @throws [Exception] - Fallback exception
      */
-    private suspend fun processVisionText(visionText: Text): ScanOperationResult {
+    private suspend fun processInputImage(inputImage: InputImage): ScanOperationResult {
+        val visionText = recognizer.process(inputImage).suspendCoroutine()
         if (visionText.textBlocks.isEmpty()) {
-            throw ScanVisionTextNotFoundException()
+            return ScanOperationResult.Failed(ScanExpressionNotFoundException())
         } else {
             // Get the first text data
             val expression = visionText.textBlocks.first()
                 .lines.first()
                 .elements.first().text
-            when (val res = calculateUseCase.invoke(expression)) {
-                is ScanOperationResult.Success -> {
-                    saveScanDataUseCase.invoke(
-                        expression = expression,
-                        scanOperation = res.scanOperation,
-                        num1 = res.num1,
-                        num2 = res.num2,
-                        result = res.result
-                    )
-                    return res
-                }
-                is ScanOperationResult.Failed -> throw res.throwable
+
+            val res = calculateUseCase.invoke(expression)
+
+            // Save the result if success
+            if (res is ScanOperationResult.Success) {
+                saveScanDataUseCase.invoke(
+                    expression = expression,
+                    scanOperation = res.scanOperation,
+                    num1 = res.num1,
+                    num2 = res.num2,
+                    result = res.result
+                )
             }
+            return res
         }
     }
 
@@ -78,41 +73,32 @@ class ScanViewModel @Inject constructor(
      * @param [context] - The context to be used for getting [InputImage]
      * @param [imageUri] - The [Uri] of the image to be scanned.
      * @return [ScanOperationResult] - Containing all the data and the result of the expression.
-     * @throws [ScanVisionTextNotFoundException] - When scanned text is empty
+     * @throws [ScanExpressionNotFoundException] - When scanned text is empty
      * @throws [ScanNumberNotFoundException] - Number is not found in the scanned text
      * @throws [ScanOperatorNotFoundException] - When the scanned text does not contain any of the
      *   supported operators.
      * @throws [Exception] - Fallback exception
      */
-    suspend fun findEquation(context: Context, imageUri: Uri): ScanOperationResult {
+    @Suppress("BlockingMethodInNonBlockingContext")
+    suspend fun findExpression(context: Context, imageUri: Uri): ScanOperationResult {
         val image = InputImage.fromFilePath(context, imageUri)
-        val visionText = recognizer.process(image).suspendCoroutine()
-        return processVisionText(visionText)
+        return processInputImage(image)
     }
 
+    /**
+     * Find the expression using the [imageProxy]
+     *
+     * @param [imageProxy] - The image from camera capture
+     * @return [ScanOperationResult] - Containing all the data and the result of the expression.
+     */
     @SuppressLint("UnsafeOptInUsageError")
-    fun findEquation(imageProxy: ImageProxy): Task<Text>? {
-        val mediaImage = imageProxy.image
-        if (mediaImage != null) {
-            val image = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
-            return recognizer.process(image)
+    suspend fun findExpression(imageProxy: ImageProxy): ScanOperationResult {
+        imageProxy.image?.let {
+            val image = InputImage.fromMediaImage(
+                it, imageProxy.imageInfo.rotationDegrees
+            )
+            return processInputImage(image)
         }
-        return null
+        return ScanOperationResult.Failed(ScanCaptureImageNotFoundException())
     }
-
-//    suspend fun findEquation(bitmap: Bitmap, rotationDegrees: Int = 0): ScanOperationResult {
-//        return suspendCoroutine { coroutine ->
-//            val image = InputImage.fromBitmap(bitmap, rotationDegrees)
-//            recognizer.process(image).addOnSuccessListener { visionText ->
-//                try {
-//                    val res = processVisionText(visionText)
-//                    coroutine.resume(res)
-//                } catch (ex: Exception) {
-//                    coroutine.resumeWithException(ex)
-//                }
-//            }.addOnFailureListener { ex ->
-//                coroutine.resumeWithException(ex)
-//            }
-//        }
-//    }
 }

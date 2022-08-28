@@ -17,31 +17,32 @@ import java.lang.NumberFormatException
  */
 class CalculateUseCase {
 
-    operator fun invoke(operationString: String): ScanOperationResult {
+    operator fun invoke(expression: String): ScanOperationResult {
         return ScanOperation.supportedOperations.firstOrNull {
-            operationString.contains(char = it.symbol)
+            expression.contains(char = it.symbol)
         }?.let {
             return@let try {
                 // Get the first number
-                val num1 = operationString.substring(
+                val num1 = expression.substring(
                     startIndex = 0,
-                    endIndex = operationString.indexOf(
+                    endIndex = expression.indexOf(
                         char = it.symbol,
                         startIndex = 0
                     )
                 ).toFloat()
 
                 // Get the second number
-                val num2 = operationString.substring(
-                    startIndex = operationString.indexOf(
+                val num2 = expression.substring(
+                    startIndex = expression.indexOf(
                         char = it.symbol,
                         startIndex = 0
                     ) + 1,
-                    endIndex = operationString.length
+                    endIndex = expression.length
                 ).toFloat()
 
                 // Return the success result
                 ScanOperationResult.Success(
+                    expression = expression,
                     scanOperation = it,
                     num1 = num1,
                     num2 = num2

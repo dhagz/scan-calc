@@ -7,10 +7,12 @@ import androidx.compose.material.Card
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import tech.dhagz.scancalc.R
 import tech.dhagz.scancalc.features.list.models.ScanData
 import tech.dhagz.scancalc.features.scan.models.ScanOperation
 
@@ -64,12 +66,18 @@ fun ScanListDataListItem(
             Text(
                 modifier = Modifier
                     .fillMaxWidth(),
-                text = "Input: ${scanData.expression}"
+                text = stringResource(
+                    R.string.result_expression_text_label,
+                    scanData.expression
+                )
             )
             Text(
                 modifier = Modifier
                     .fillMaxWidth(),
-                text = "Result: ${scanData.result}"
+                text = stringResource(
+                    R.string.result_expression_result_label,
+                    scanData.result
+                )
             )
         }
     }

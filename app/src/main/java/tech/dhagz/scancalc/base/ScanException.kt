@@ -22,9 +22,14 @@ class ScanOperatorNotFoundException : ScanException()
 /**
  * Thrown when the scan didn't fine anything.
  */
-class ScanVisionTextNotFoundException : ScanException()
+class ScanExpressionNotFoundException : ScanException()
 
 /**
  * Thrown when the scanned text is not able to parse the numbers
  */
 class ScanNumberNotFoundException(cause: Throwable? = null) : ScanException(cause = cause)
+
+/**
+ * Thrown when capture is not able to detect an image.
+ */
+class ScanCaptureImageNotFoundException : ScanException()

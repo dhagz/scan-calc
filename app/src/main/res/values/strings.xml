@@ -1,10 +1,34 @@
 <resources>
     <string name="app_name">ScanCalc</string>
 
+    <!-- Generic Errors : START -->
     <string name="error_something_went_wrong">Something went wrong.</string>
+    <string name="error_operator_not_found">Supported operator is not found. Supported operators are: + - / *</string>
+    <string name="error_expression_not_found">Expression not found.</string>
+    <string name="error_number_not_found">Number not found.</string>
+    <string name="error_image_not_found">Image not found.</string>
+    <!-- Generic Errors : END -->
 
+    <!-- TopBar : START -->
     <string name="topbar_back">Back</string>
+    <!-- TopBar : END -->
 
+    <!-- Result : START -->
+    <string name="result_expression_text_label">Expression: %1$s</string>
+    <string name="result_expression_result_label">Result: %1$s</string>
+    <!-- Result : END -->
+
+    <!-- Image Picker : START -->
     <string name="image_picker_pick_image">Pick Image</string>
+    <!-- Image Picker : END -->
+
+    <!-- Camera UI : START -->
+    <string name="camera_capture">Capture</string>
+    <string name="camera_error_failed_capture">Failed to capture image.</string>
+    <!-- Camera UI : END -->
+
+    <!-- Dialog : START -->
+    <string name="dialog_cancel">Cancel</string>
+    <!-- Dialog : END -->
 
 </resources>

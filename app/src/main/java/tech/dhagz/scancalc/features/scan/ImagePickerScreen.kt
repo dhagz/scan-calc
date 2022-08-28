@@ -28,7 +28,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import tech.dhagz.scancalc.R
 import tech.dhagz.scancalc.features.scan.models.ScanOperationResult
-import java.lang.Exception
 
 
 /**
@@ -101,39 +100,26 @@ fun ImagePickerScreen(
 
                 LaunchedEffect(imageUri.value) {
                     imageUri.value?.let { uri ->
-                        try {
-                            when (val res = scanViewModel.findEquation(context, uri)) {
-                                is ScanOperationResult.Success -> {
-                                    Toast.makeText(
-                                        context,
-                                        "Result: ${res.result}",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
-                                is ScanOperationResult.Failed -> {
-                                    Toast.makeText(
-                                        context,
-                                        context.getString(R.string.error_something_went_wrong),
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                    Log.e(
-                                        "ImagePickerScreen",
-                                        "Failed Operation",
-                                        res.throwable
-                                    )
-                                }
+                        when (val res = scanViewModel.findExpression(context, uri)) {
+                            is ScanOperationResult.Success -> {
+                                Toast.makeText(
+                                    context,
+                                    "Result: ${res.result}",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
-                        } catch (ex: Exception) {
-                            Toast.makeText(
-                                context,
-                                context.getString(R.string.error_something_went_wrong),
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            Log.e(
-                                "ImagePickerScreen",
-                                "Failed Operation",
-                                ex
-                            )
+                            is ScanOperationResult.Failed -> {
+                                Toast.makeText(
+                                    context,
+                                    context.getString(R.string.error_something_went_wrong),
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                Log.e(
+                                    "ImagePickerScreen",
+                                    "Failed Operation",
+                                    res.throwable
+                                )
+                            }
                         }
                     }
                 }
