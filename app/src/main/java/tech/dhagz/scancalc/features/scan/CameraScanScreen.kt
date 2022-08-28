@@ -25,7 +25,8 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import tech.dhagz.scancalc.R
 import tech.dhagz.scancalc.base.ui.LoadingDialog
 import tech.dhagz.scancalc.base.ui.ResultDialog
@@ -44,7 +45,8 @@ import java.util.concurrent.Executor
 @Suppress("OPT_IN_IS_NOT_ENABLED")
 @Composable
 fun CameraScanScreen(
-    scanViewModel: ScanViewModel = viewModel()
+    navController: NavController? = null,
+    scanViewModel: ScanViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
     val imageCapture = remember { mutableStateOf<ImageCapture?>(null) }
@@ -55,7 +57,9 @@ fun CameraScanScreen(
     val scanOperationResult = remember { mutableStateOf<ScanOperationResult?>(null) }
 
     LoadingDialog(isCaptureLoading)
-    ResultDialog(scanOperationResult)
+    ResultDialog(scanOperationResult) {
+        navController?.navigateUp()
+    }
 
     LaunchedEffect(imageProxy.value) {
         imageProxy.value?.let { image ->
