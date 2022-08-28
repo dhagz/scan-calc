@@ -14,3 +14,11 @@
 - Hilt - https://developer.android.com/training/dependency-injection/hilt-android
 - Jetpack Compose - https://developer.android.com/jetpack/compose
 - Room - https://developer.android.com/jetpack/androidx/releases/room
+
+## Known Issue
+List of results are delayed and I am not sure why. 
+
+In `ScanListScreen` I am expecting:
+`val pagingItemsList = scannedListViewModel.getScanData().observeAsState()` to be updated once a new record is added to the database, and would recompose the UI. 
+
+Unfortunately it's not performing as expected.
