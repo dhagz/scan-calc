@@ -1,0 +1,7 @@
+<resources>
+
+    <!-- Image Picker : START -->
+    <string name="image_picker_pick_image">Pick Image</string>
+    <!-- Image Picker : END -->
+
+</resources>

@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -87,7 +88,7 @@ fun ScanListScreen(
                 launcher.launch("image/*")
             }) {
                 Icon(
-                    imageVector = Icons.Rounded.Add,
+                    painter = painterResource(id = R.drawable.ic_scan_list_add_24),
                     contentDescription = stringResource(id = R.string.image_picker_pick_image)
                 )
             }
@@ -115,12 +116,6 @@ fun ScanListScreen(
                             ScanListDataListItem(data)
                         }
                     }
-//                    pagingItemsList.loadState.append.endOfPaginationReached -> {
-//                        // Show the empty screen composable
-//                        item {
-//                            ScanListEmptyListItem()
-//                        }
-//                    }
                 }
             }
         }

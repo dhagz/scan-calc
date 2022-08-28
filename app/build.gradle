@@ -36,6 +36,25 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    flavorDimensions "color", "imageSource"
+    productFlavors {
+        red {
+            dimension "color"
+            applicationIdSuffix ".red"
+            versionNameSuffix "-red"
+        }
+        green {
+            dimension "color"
+            applicationIdSuffix ".green"
+            versionNameSuffix "-green"
+        }
+        fileSystem {
+            dimension "imageSource"
+        }
+        builtInCamera {
+            dimension "imageSource"
+        }
+    }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8

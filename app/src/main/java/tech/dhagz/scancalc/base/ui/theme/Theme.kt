@@ -1,42 +1,24 @@
 package tech.dhagz.scancalc.base.ui.theme
 
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.colorResource
+import tech.dhagz.scancalc.R
 
-private val DarkColorPalette = darkColors(
-    primary = Purple200,
-    primaryVariant = Purple700,
-    secondary = Teal200
-)
-
-private val LightColorPalette = lightColors(
-    primary = Purple500,
-    primaryVariant = Purple700,
-    secondary = Teal200
-
-    /* Other default colors to override
-    background = Color.White,
-    surface = Color.White,
-    onPrimary = Color.White,
-    onSecondary = Color.Black,
-    onBackground = Color.Black,
-    onSurface = Color.Black,
-    */
-)
-
+/**
+ * The app theme
+ */
 @Composable
-fun ScanCalcTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
-    val colors = if (darkTheme) {
-        DarkColorPalette
-    } else {
-        LightColorPalette
-    }
+fun ScanCalcTheme(content: @Composable () -> Unit) {
+    val colorPalette = lightColors(
+        primary = colorResource(id = R.color.primary),
+        primaryVariant = colorResource(id = R.color.primaryVariant),
+        secondary = colorResource(id = R.color.secondary)
+    )
 
     MaterialTheme(
-        colors = colors,
+        colors = colorPalette,
         typography = Typography,
         shapes = Shapes,
         content = content
