@@ -71,7 +71,7 @@ fun ScanListScreen(
     val isCaptureLoading = remember { mutableStateOf(false) }
     val scanOperationResult = remember { mutableStateOf<ScanOperationResult?>(null) }
 
-    val pagingItemsList = scannedListViewModel.getScanData().observeAsState()
+    val itemsList = scannedListViewModel.getScanData().observeAsState()
 
     LoadingDialog(isCaptureLoading)
     ResultDialog(scanOperationResult)
@@ -116,14 +116,13 @@ fun ScanListScreen(
         ) {
             LazyColumn(
                 contentPadding = PaddingValues(
-                    top = 8.dp,
-                    bottom = 72.dp
+                    bottom = 80.dp
                 )
             ) {
-                val count = pagingItemsList.value?.size ?: 0
+                val count = itemsList.value?.size ?: 0
                 when {
                     count > 0 -> {
-                        val list = pagingItemsList.value ?: emptyList()
+                        val list = itemsList.value ?: emptyList()
                         // Populate the items
                         items(items = list) { data ->
                             ScanListDataListItem(data)

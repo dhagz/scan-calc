@@ -19,6 +19,9 @@ class GetScanDataListUseCase @Inject constructor(
     private val scanDataRepository: ScanDataRepository
 ) {
 
+    /**
+     * Returns a LiveData of the list of [ScanData]
+     */
     operator fun invoke(): LiveData<List<ScanData>> {
         return scanDataRepository.getAllScanData().map {
             return@map it.map { scanDataDbModel ->

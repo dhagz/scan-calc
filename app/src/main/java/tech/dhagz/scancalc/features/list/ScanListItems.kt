@@ -1,9 +1,7 @@
 package tech.dhagz.scancalc.features.list
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Card
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -50,36 +48,34 @@ fun ScanListDataListItem(
     @PreviewParameter(ScanListDataPreviewProvider::class)
     scanData: ScanData
 ) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(
-                horizontal = 16.dp,
-                vertical = 8.dp
-            )
+    Column(
+        modifier = Modifier.fillMaxWidth()
     ) {
-        Column(
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(all = 16.dp)
-        ) {
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                text = stringResource(
-                    R.string.result_expression_text_label,
-                    scanData.expression
-                )
+                .padding(horizontal = 16.dp),
+            text = stringResource(
+                R.string.result_expression_text_label,
+                scanData.expression
             )
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                text = stringResource(
-                    R.string.result_expression_result_label,
-                    scanData.result
-                )
+        )
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            text = stringResource(
+                R.string.result_expression_result_label,
+                scanData.result
             )
-        }
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Divider()
     }
 }
 

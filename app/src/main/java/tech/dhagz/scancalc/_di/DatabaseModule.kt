@@ -1,15 +1,12 @@
 package tech.dhagz.scancalc._di
 
-import android.content.Context
-import androidx.room.Room
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import tech.dhagz.scancalc.db.AppDatabase
 import tech.dhagz.scancalc.db.local.ScanDataDao
-import tech.dhagz.scancalc.features.scan.usecases.CalculateUseCase
+import javax.inject.Singleton
 
 /**
  * ...
@@ -25,6 +22,7 @@ import tech.dhagz.scancalc.features.scan.usecases.CalculateUseCase
 class DatabaseModule {
 
     @Provides
+    @Singleton
     fun providesScanDataDao(
         appDatabase: AppDatabase
     ): ScanDataDao = appDatabase.scanDataDao()

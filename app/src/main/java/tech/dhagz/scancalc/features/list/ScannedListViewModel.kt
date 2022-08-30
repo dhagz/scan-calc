@@ -21,6 +21,9 @@ class ScannedListViewModel @Inject constructor(
     private val getScanDataListUseCase: GetScanDataListUseCase
 ) : ViewModel() {
 
+    /**
+     * Get the LiveData of the list of [ScanData]
+     */
     fun getScanData(): LiveData<List<ScanData>> {
         return getScanDataListUseCase.invoke()
     }

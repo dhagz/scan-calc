@@ -2,9 +2,10 @@ package tech.dhagz.scancalc
 
 import junit.framework.TestCase
 import org.junit.Test
-import tech.dhagz.scancalc.features.scan.usecases.CalculateUseCase
 import tech.dhagz.scancalc.features.scan.ScanNumberNotFoundException
+import tech.dhagz.scancalc.features.scan.ScanOperatorNotFoundException
 import tech.dhagz.scancalc.features.scan.models.ScanOperationResult
+import tech.dhagz.scancalc.features.scan.usecases.CalculateUseCase
 
 /**
  * ...
@@ -20,7 +21,7 @@ class CalculateTestCase {
     private val calculateUseCase = CalculateUseCase()
 
     @Test
-    fun `add success`() {
+    fun `success add`() {
         val res = calculateUseCase.invoke("1 + 2")
 
         TestCase.assertTrue(res is ScanOperationResult.Success)
@@ -31,7 +32,18 @@ class CalculateTestCase {
     }
 
     @Test
-    fun `subtract success`() {
+    fun `success add float`() {
+        val res = calculateUseCase.invoke("3.4 + 5")
+
+        TestCase.assertTrue(res is ScanOperationResult.Success)
+        val a = res as ScanOperationResult.Success
+        TestCase.assertEquals(3.4F, a.num1)
+        TestCase.assertEquals(5F, a.num2)
+        TestCase.assertEquals(8.4F, a.result)
+    }
+
+    @Test
+    fun `success subtract`() {
         val res = calculateUseCase.invoke("1 - 2")
 
         TestCase.assertTrue(res is ScanOperationResult.Success)
@@ -42,7 +54,18 @@ class CalculateTestCase {
     }
 
     @Test
-    fun `divide success`() {
+    fun `success subtract float`() {
+        val res = calculateUseCase.invoke("3 - 4.5")
+
+        TestCase.assertTrue(res is ScanOperationResult.Success)
+        val a = res as ScanOperationResult.Success
+        TestCase.assertEquals(3F, a.num1)
+        TestCase.assertEquals(4.5F, a.num2)
+        TestCase.assertEquals(-1.5F, a.result)
+    }
+
+    @Test
+    fun `success divide`() {
         val res = calculateUseCase.invoke("1 / 2")
 
         TestCase.assertTrue(res is ScanOperationResult.Success)
@@ -53,7 +76,7 @@ class CalculateTestCase {
     }
 
     @Test
-    fun `multiply success`() {
+    fun `success multiply`() {
         val res = calculateUseCase.invoke("1 * 2")
 
         TestCase.assertTrue(res is ScanOperationResult.Success)
@@ -64,7 +87,7 @@ class CalculateTestCase {
     }
 
     @Test
-    fun `invalid number1`() {
+    fun `failed invalid number1`() {
         val res = calculateUseCase.invoke("1asdf * 2")
 
         TestCase.assertTrue(res is ScanOperationResult.Failed)
@@ -73,11 +96,38 @@ class CalculateTestCase {
     }
 
     @Test
-    fun `invalid number2`() {
+    fun `failed invalid number2`() {
         val res = calculateUseCase.invoke("1 * 2asdf")
 
         TestCase.assertTrue(res is ScanOperationResult.Failed)
         val a = res as ScanOperationResult.Failed
         TestCase.assertTrue(a.throwable is ScanNumberNotFoundException)
+    }
+
+    @Test
+    fun `failed empty expression`() {
+        val res = calculateUseCase.invoke("")
+
+        TestCase.assertTrue(res is ScanOperationResult.Failed)
+        val a = res as ScanOperationResult.Failed
+        TestCase.assertTrue(a.throwable is ScanOperatorNotFoundException)
+    }
+
+    @Test
+    fun `failed expression not found`() {
+        val res = calculateUseCase.invoke("+")
+
+        TestCase.assertTrue(res is ScanOperationResult.Failed)
+        val a = res as ScanOperationResult.Failed
+        TestCase.assertTrue(a.throwable is ScanNumberNotFoundException)
+    }
+
+    @Test
+    fun `failed operator not found`() {
+        val res = calculateUseCase.invoke("1 = 2")
+
+        TestCase.assertTrue(res is ScanOperationResult.Failed)
+        val a = res as ScanOperationResult.Failed
+        TestCase.assertTrue(a.throwable is ScanOperatorNotFoundException)
     }
 }

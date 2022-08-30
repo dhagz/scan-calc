@@ -89,8 +89,6 @@ dependencies {
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
 
-    implementation "androidx.constraintlayout:constraintlayout-compose:1.0.1"
-
     // LiveData
     implementation 'androidx.compose.runtime:runtime-livedata:1.2.1'
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.5.1"
@@ -125,7 +123,4 @@ dependencies {
     implementation "androidx.camera:camera-video:${camerax_version}"
     implementation "androidx.camera:camera-view:${camerax_version}"
     implementation "androidx.camera:camera-extensions:${camerax_version}"
-
-    // Permissions
-//    implementation "com.google.accompanist:accompanist-permissions:0.26.2-beta"
 }

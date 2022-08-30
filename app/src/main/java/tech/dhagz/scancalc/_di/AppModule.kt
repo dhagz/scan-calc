@@ -9,6 +9,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import tech.dhagz.scancalc.db.AppDatabase
 import tech.dhagz.scancalc.features.scan.usecases.CalculateUseCase
+import javax.inject.Singleton
 
 /**
  * ...
@@ -24,6 +25,7 @@ import tech.dhagz.scancalc.features.scan.usecases.CalculateUseCase
 class AppModule {
 
     @Provides
+    @Singleton
     fun providesAppDatabase(
         @ApplicationContext
         context: Context
@@ -35,6 +37,7 @@ class AppModule {
     }
 
     @Provides
+    @Singleton
     fun providesCalculateUseCase(): CalculateUseCase = CalculateUseCase()
 
 }
